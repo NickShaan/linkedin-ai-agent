@@ -1,0 +1,133 @@
+<main class="min-h-screen bg-gray-50 px-4 py-6">
+  <div class="mx-auto max-w-3xl space-y-4">
+    <button routerLink="/app" class="text-sm text-gray-600 hover:underline">← Back</button>
+    <h1 class="text-2xl font-bold">Compose</h1>
+    <p class="text-sm text-gray-600">Generate a draft and schedule it to post on LinkedIn.</p>
+
+    <div *ngIf="error" class="rounded border border-red-200 bg-red-50 text-red-700 px-4 py-2 text-sm">{{ error }}</div>
+    <div *ngIf="schedError" class="rounded border border-red-200 bg-red-50 text-red-700 px-4 py-2 text-sm">{{ schedError }}</div>
+    <div *ngIf="success" class="rounded border border-green-200 bg-green-50 text-green-700 px-4 py-2 text-sm">{{ success }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="generate('draft')" class="bg-white rounded-xl shadow p-5 space-y-5">
+
+      <!-- REQUIRED: Date & Time (top) -->
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Date (required)</label>
+          <input type="date" formControlName="date"
+                 class="w-full border rounded-lg px-3 py-2"
+                 [class.border-red-500]="form.controls.date.touched && form.controls.date.invalid"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Time (required)</label>
+          <input type="time" formControlName="time"
+                 class="w-full border rounded-lg px-3 py-2"
+                 [class.border-red-500]="form.controls.time.touched && form.controls.time.invalid"/>
+        </div>
+      </div>
+
+      <!-- Optional inputs -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Topic (optional)</label>
+        <textarea rows="3" formControlName="topic"
+          class="w-full border rounded-lg px-3 py-2"
+          placeholder="Leave empty to let AI pick based on your profile/resume"></textarea>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Format</label>
+          <select formControlName="format" class="w-full border rounded-lg px-3 py-2">
+            <option value="short_post">Short post</option>
+            <option value="article">Article</option>
+            <option value="carousel">Carousel (text)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Model used</label>
+          <select formControlName="model" class="w-full border rounded-lg px-3 py-2">
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3">
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" formControlName="emojis" class="h-4 w-4">
+          <span class="text-sm">Use emojis</span>
+        </label>
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" formControlName="suggestImage" class="h-4 w-4">
+          <span class="text-sm">Suggest image</span>
+        </label>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Tone (comma-separated, optional)</label>
+        <input formControlName="toneCSV"
+               class="w-full border rounded-lg px-3 py-2"
+               placeholder="e.g., friendly, concise">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Post kind (optional)</label>
+        <input formControlName="kind"
+               class="w-full border rounded-lg px-3 py-2"
+               placeholder="e.g., tutorial, announcement">
+      </div>
+
+      <!-- New: Post immediately -->
+      <div class="flex items-center justify-between">
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" formControlName="postNow" class="h-4 w-4">
+          <span class="text-sm">Post immediately to LinkedIn</span>
+        </label>
+        <select formControlName="visibility" class="border rounded px-2 py-1 text-sm">
+          <option value="PUBLIC">Public</option>
+          <option value="CONNECTIONS">Connections only</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Default submit: just generate (or generate & post if toggle on) -->
+        <button type="submit"
+                [disabled]="loading || form.controls.date.invalid || form.controls.time.invalid"
+                class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50">
+          {{ loading ? 'Generating...' : (form.value.postNow ? 'Generate & Post' : 'Generate') }}
+        </button>
+
+        <!-- Or explicit Generate & Post button -->
+        <!-- <button type="button"
+                (click)="generate('postNow')"
+                [disabled]="loading || form.controls.date.invalid || form.controls.time.invalid"
+                class="border rounded px-4 py-2 hover:bg-gray-50 disabled:opacity-50">
+          {{ loading ? 'Posting…' : 'Generate & Post' }}
+        </button>
+
+        <button type="button"
+                [disabled]="!draft || saving"
+                (click)="schedule()"
+                class="border rounded px-4 py-2 hover:bg-gray-50 disabled:opacity-50">
+          {{ saving ? 'Scheduling…' : 'Schedule' }}
+        </button> -->
+      </div>
+    </form>
+
+    <section *ngIf="draft" class="bg-white rounded-xl shadow p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Draft</h2>
+        <button class="border rounded px-3 py-1 text-sm hover:bg-gray-50" (click)="copy()">Copy</button>
+      </div>
+      <p class="text-xs text-gray-500">Model: {{ form.value.model }} • Format: {{ draft.format }}</p>
+      <pre class="whitespace-pre-wrap text-sm leading-6">{{ draft.text }}</pre>
+      <p class="text-xs text-gray-500">Saved as post #{{ draft.post_id }}</p>
+    </section>
+
+    <section *ngIf="lastDraft && !draft" class="bg-white rounded-xl shadow p-5 space-y-2">
+      <h3 class="text-sm font-semibold">Last draft</h3>
+      <p class="text-xs text-gray-500">Saved at {{ lastDraft.when }}</p>
+      <pre class="whitespace-pre-wrap text-sm leading-6">{{ lastDraft.text }}</pre>
+    </section>
+  </div>
+</main>

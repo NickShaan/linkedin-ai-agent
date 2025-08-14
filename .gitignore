@@ -1,0 +1,13 @@
+# Ignore backend env file
+backend/.env
+
+# Node modules & build outputs
+frontend/node_modules
+frontend/dist
+
+# Python cache
+backend/__pycache__/
+backend/.pytest_cache/
+
+# VS Code settings
+.vscode/

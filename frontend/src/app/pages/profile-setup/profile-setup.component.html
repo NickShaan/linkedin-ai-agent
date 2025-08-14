@@ -1,0 +1,84 @@
+<main class="min-h-screen bg-gray-50">
+  <header class="bg-white border-b">
+    <div class="mx-auto max-w-3xl px-4 py-4">
+      <h1 class="text-xl font-semibold">Complete your creator profile</h1>
+      <p class="text-sm text-gray-500">
+        These details help the AI write posts in your voice. You can edit them anytime.
+      </p>
+    </div>
+  </header>
+
+  <section class="mx-auto max-w-3xl px-4 py-6">
+    <form
+      [formGroup]="form"
+      (ngSubmit)="save()
+      "
+      class="bg-white rounded-2xl shadow p-6 border border-gray-100 grid gap-4"
+    >
+      <label class="text-sm">
+        Headline
+        <input
+          formControlName="headline"
+          class="mt-1 w-full border rounded-md px-3 py-2"
+          placeholder="e.g., AI Engineer • Building ML for Growth"
+        />
+      </label>
+
+      <label class="text-sm">
+        Industries (comma-separated)
+        <input
+          formControlName="industriesCSV"
+          class="mt-1 w-full border rounded-md px-3 py-2"
+          placeholder="SaaS, AI"
+        />
+      </label>
+
+      <label class="text-sm">
+        Goals
+        <input
+          formControlName="goals"
+          class="mt-1 w-full border rounded-md px-3 py-2"
+          placeholder="Grow audience, attract leads, share learning"
+        />
+      </label>
+
+      <label class="text-sm">
+        Top Skills (comma-separated)
+        <input
+          formControlName="skillsCSV"
+          class="mt-1 w-full border rounded-md px-3 py-2"
+          placeholder="LLMs, prompt engineering, productivity, dev tools"
+        />
+      </label>
+
+      <label class="text-sm">
+        Work history / About (short text)
+        <textarea
+          formControlName="about"
+          rows="5"
+          class="mt-1 w-full border rounded-md px-3 py-2"
+          placeholder="Last 1–2 roles, what you do, industries, audience…"
+        ></textarea>
+      </label>
+
+      <div *ngIf="error" class="text-sm text-red-600">{{ error }}</div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <!-- <button
+          type="button"
+          class="px-3 py-1.5 rounded border hover:bg-gray-50"
+          (click)="skip()"
+        >
+          Skip for now
+        </button> -->
+        <button
+          type="submit"
+          class="px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700"
+          [disabled]="saving"
+        >
+          {{ saving ? 'Saving…' : 'Save & Continue' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

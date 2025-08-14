@@ -1,0 +1,134 @@
+<main class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="w-full max-w-2xl bg-white rounded-xl shadow p-6 space-y-6">
+    <header class="text-center space-y-1">
+      <h1 class="text-2xl font-bold">Create your account</h1>
+      <p class="text-gray-600 text-sm">Use your email to sign up.</p>
+    </header>
+
+    <!-- Top-level error banner -->
+    <div *ngIf="error" class="rounded-md border border-red-200 bg-red-50 text-red-800 px-4 py-2 text-sm">
+      {{ error }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="grid grid-cols-1 gap-4">
+      <!-- Name -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Full name</label>
+        <input
+          formControlName="name"
+          type="text"
+          autocomplete="name"
+          [ngClass]="{'border-red-500 ring-2 ring-red-200': isInvalid('name')}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+        <p *ngIf="isInvalid('name')" class="text-xs text-red-600 mt-1">{{ err('name') }}</p>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Email</label>
+        <input
+          formControlName="email"
+          type="email"
+          autocomplete="email"
+          [ngClass]="{'border-red-500 ring-2 ring-red-200': isInvalid('email')}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+        <p *ngIf="isInvalid('email')" class="text-xs text-red-600 mt-1">{{ err('email') }}</p>
+      </div>
+
+      <!-- Mobile with country -->
+      <div class="grid grid-cols-[140px_1fr] gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Country</label>
+          <select
+            formControlName="countryCode"
+            [ngClass]="{'border-red-500 ring-2 ring-red-200': isInvalid('countryCode')}"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            <option *ngFor="let c of countries" [value]="c.code">{{ c.label }}</option>
+          </select>
+          <p *ngIf="isInvalid('countryCode')" class="text-xs text-red-600 mt-1">{{ err('countryCode') }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Mobile</label>
+          <input
+            formControlName="mobile"
+            type="text"
+            maxlength="10"
+            inputmode="numeric"
+            autocomplete="tel-national"
+            [ngClass]="{'border-red-500 ring-2 ring-red-200': isInvalid('mobile')}"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+          <p *ngIf="isInvalid('mobile')" class="text-xs text-red-600 mt-1">{{ err('mobile') }}</p>
+        </div>
+      </div>
+
+      <!-- LinkedIn ID -->
+      <div>
+        <label class="block text-sm font-medium mb-1">LinkedIn ID or profile URL</label>
+        <input
+          formControlName="linkedinId"
+          type="text"
+          placeholder="e.g. johndoe or https://www.linkedin.com/in/johndoe/"
+          [ngClass]="{'border-red-500 ring-2 ring-red-200': isInvalid('linkedinId')}"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+        <p *ngIf="isInvalid('linkedinId')" class="text-xs text-red-600 mt-1">{{ err('linkedinId') }}</p>
+      </div>
+
+      <!-- Account password -->
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Password</label>
+          <input
+            formControlName="password"
+            type="password"
+            autocomplete="new-password"
+            [ngClass]="{'border-red-500 ring-2 ring-red-200': isInvalid('password')}"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+          <p *ngIf="isInvalid('password')" class="text-xs text-red-600 mt-1">{{ err('password') }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Confirm password</label>
+          <input
+              formControlName="confirmPassword"
+              type="password"
+              [ngClass]="{
+                'border-red-500 ring-2 ring-red-200':
+                  isInvalid('confirmPassword') || form.hasError('mismatch')
+              }"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+
+            <p *ngIf="isInvalid('confirmPassword') || form.hasError('mismatch')"
+              class="text-xs text-red-600 mt-1">
+              {{ err('confirmPassword') }}
+            </p>
+
+        </div>
+      </div>
+
+      <!-- TOS -->
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" formControlName="acceptTos" class="h-4 w-4">
+        I agree to the Terms of Service and Privacy Policy.
+      </label>
+      <p *ngIf="isInvalid('acceptTos')" class="text-xs text-red-600 -mt-2 mb-2">{{ err('acceptTos') }}</p>
+
+      <button
+        type="submit"
+        [disabled]="loading || form.invalid"
+        class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center gap-2">
+        <span *ngIf="loading" class="inline-block h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+        <span>{{ loading ? 'Creating account...' : 'Create account' }}</span>
+      </button>
+
+      <p class="text-center text-sm text-gray-600">
+        Already have an account?
+        <a routerLink="/login" class="text-indigo-600 hover:underline">Log in</a>
+      </p>
+    </form>
+
+    <!-- Debug (optional) -->
+    <!--
+    <pre class="text-xs text-gray-500">{{ invalidReasons | json }}</pre>
+    -->
+  </div>
+</main>

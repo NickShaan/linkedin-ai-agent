@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* optional helpers */
+:root { --pad: 1rem; }
+.container { max-width: 960px; margin-inline: auto; padding: var(--pad); }
+.btn { padding:.6rem 1rem; border-radius:.5rem; }
+.btn-primary { background:#000; color:#fff; }
+.input { border:1px solid #e5e7eb; padding:.6rem; border-radius:.5rem; width:100%; }
+.card { border:1px solid #e5e7eb; border-radius:.5rem; padding:1rem; white-space:pre-wrap; }

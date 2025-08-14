@@ -1,13 +1,18 @@
-# Ignore backend env file
-backend/.env
-
-# Node modules & build outputs
-frontend/node_modules
-frontend/dist
+# Python virtual environments
+backend/linkedin_ai_backend/
 
 # Python cache
-backend/__pycache__/
+**/__pycache__/
+**/*.pyc
 backend/.pytest_cache/
 
-# VS Code settings
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+
+# Secrets
+backend/.env
+
+# Editors/OS
 .vscode/
+.DS_Store
